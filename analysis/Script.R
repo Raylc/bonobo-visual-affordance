@@ -2,7 +2,7 @@
 library(tidyverse)
 library(broom)
 library(purrr)
-
+library(kinship2)
 ## load data
 dat<-read.csv("data/core_vs_flake_training.csv")
 flakes<-read.csv("data/flake data.csv")
@@ -186,3 +186,109 @@ write_csv(
   summary_table_data,
   "output/Table_1_metrics.csv"
 )
+
+
+############kinship figure######################
+# ------------------------------------------------------------
+# Individuals
+# ------------------------------------------------------------
+
+id <- c(
+  "Bosondjo",
+  "Lorel",
+  "Matata",
+  "P-suke",
+  "Panbanisha",
+  "Kanzi",
+  "Nyota",
+  "Maisha",
+  "Elikya",
+  "Teco"
+)
+
+
+# ------------------------------------------------------------
+# Parents
+# ------------------------------------------------------------
+
+dadid <- c(
+  NA,
+  NA,
+  NA,
+  NA,
+  "Bosondjo",     # Panbanisha
+  "Bosondjo",     # Kanzi
+  "P-suke",       # Nyota
+  "P-suke",       # Maisha
+  "P-suke",       # Elikya
+  "Nyota"         # Teco
+)
+
+momid <- c(
+  NA,
+  NA,
+  NA,
+  NA,
+  "Matata",       # Panbanisha
+  "Lorel",        # Kanzi
+  "Panbanisha",   # Nyota
+  "Matata",       # Maisha
+  "Matata",       # Elikya
+  "Elikya"        # Teco
+)
+
+
+# ------------------------------------------------------------
+# Sex
+#
+# 1 = male
+# 2 = female
+# ------------------------------------------------------------
+
+sex <- c(
+  1,  # Bosondjo  - male
+  2,  # Lorel     - female
+  2,  # Matata    - female
+  1,  # P-suke    - male
+  2,  # Panbanisha- female
+  1,  # Kanzi     - male
+  1,  # Nyota     - male
+  1,  # Maisha    - male
+  2,  # Elikya    - female
+  1   # Teco      - male
+)
+
+
+# ------------------------------------------------------------
+# Create pedigree
+# ------------------------------------------------------------
+
+ped <- pedigree(
+  id = id,
+  dadid = dadid,
+  momid = momid,
+  sex = sex
+)
+
+
+# Open the PNG device with specified resolution and dimensions
+png(
+  filename = "output/bonobo_kinship_pedigree.png",
+  width = 10,          # Width in inches
+  height = 8,          # Height in inches
+  units = "in",        # Unit for width/height
+  res = 600            # Resolution in DPI
+)
+
+# Render your plot
+plot(
+  ped,
+  id = id,
+  align = TRUE,
+  packed = FALSE,
+  cex = 0.9,
+  symbolsize = 1.5
+)
+
+# Save and close the graphic file
+dev.off()
